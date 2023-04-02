@@ -1,0 +1,4 @@
+﻿  源.cpp
+D:\Code\Problem_CodeForces\competition_230402_3\源.cpp(11,17): warning C4244: “初始化”: 从“double”转换到“__int64”，可能丢失数据
+D:\Code\Problem_CodeForces\competition_230402_3\源.cpp(17,19): warning C4244: “+=”: 从“double”转换到“__int64”，可能丢失数据
+  competition_230402_3.vcxproj -> D:\Code\Problem_CodeForces\competition_230402_3\x64\Debug\competition_230402_3.exe
