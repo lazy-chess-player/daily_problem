@@ -189,7 +189,7 @@ int dfs(int u, int fa)
     {
         if (v == fa)
             continue;
-        if (h[v].size() == 1)
+        if (!h[v].size())
         {
             cnt[u]++;
             cnt[v]++;
@@ -209,7 +209,6 @@ void solve()
     {
         cin >> a >> b;
         h[a].pb(b);
-        h[b].pb(a);
     }
     dfs(1, 1);
     int q;
