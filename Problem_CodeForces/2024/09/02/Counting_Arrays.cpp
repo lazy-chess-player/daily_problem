@@ -197,21 +197,22 @@ inline void write(T x)
 }
 
 /*#####################################BEGIN#####################################*/
-const int N = 1e6 + 5;
+const int N = 2e6 + 5;
 
-const int mod = 1e9 + 7;
+const ll mod = 1e9 + 7;
 
 ll fact[N], infact[N];
 ll pw2[N];
 
-int qmi(int a, int k, int p = mod) // 快速幂模板
+int qmi(ll x, ll k, ll p = mod) // 快速幂模板
 {
-    int res = 1;
+    x %= p;
+    ll res = 1;
     while (k)
     {
         if (k & 1)
-            res = (ll)res * a % p;
-        a = (ll)a * a % p;
+            res = (ll)res * x % p;
+        x = (ll)x * x % p;
         k >>= 1;
     }
     return res;
@@ -251,7 +252,7 @@ void solve()
     {
         if (x % i == 0)
         {
-            int cnt = 0;
+            ll cnt = 0;
             while (x % i == 0)
             {
                 x /= i;
