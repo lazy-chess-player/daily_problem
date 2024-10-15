@@ -203,49 +203,41 @@ inline void write(T x)
 }
 
 /*#####################################BEGIN#####################################*/
-
-const int N = 2e3 + 5;
-
-ll f[N][N];
-
-const int mod = 1e9 + 7;
-
-ll qmi(ll x, ll k, ll p = mod)
-{
-    x %= p;
-    ll res = 1;
-    while (k)
-    {
-        if (k & 1)
-            res = res * x % p;
-        x = x * x % p;
-        k >>= 1;
-    }
-    return res;
-}
-void getF()
-{
-    f[0][0] = 0;
-    ll inv2 = qmi(2, mod - 2);
-    for (int i = 1; i < N; i++)
-    {
-        f[i][i] = i;
-    }
-    for (int i = 2; i < N; i++)
-    {
-        for (int j = 1; j < i; j++)
-        {
-            f[i][j] = (f[i - 1][j] + f[i - 1][j - 1]) % mod * inv2 % mod;
-        }
-    }
-}
-
 void solve()
 {
-    int n, m;
-    ll k;
-    cin >> n >> m >> k;
-    cout << f[n][m] * k % mod << endl;
+    int n;
+    cin >> n;
+    vi h(n + 1), b(n + 1);
+    vl val(n + 1), dp(n + 1), pre(n + 1);
+
+    pre[0] = -infll;
+
+    for (int i = 1; i <= n; ++i)
+    {
+        cin >> h[i];
+    }
+    for (int i = 1; i <= n; ++i)
+    {
+        cin >> b[i];
+    }
+
+    vi stk;
+    ll v;
+    for (int i = 1; i <= n; ++i)
+    {
+        v = dp[i - 1];
+        while (!stk.empty() && h[i] < h[stk.back()])
+        {
+            v = max(v, val.back());
+            stk.pop_back();
+            val.pop_back();
+        }
+        stk.push_back(i);
+        val.push_back(v);
+        dp[i] = pre[stk.size()] = max(pre[stk.size() - 1], v + b[i]);
+    }
+
+    cout << dp[n] << endl;
 }
 
 int main()
@@ -254,8 +246,7 @@ int main()
     // freopen("test.in", "r", stdin);
     // freopen("test.out", "w", stdout);
     int _ = 1;
-    std::cin >> _;
-    getF();
+    // std::cin >> _;
     while (_--)
     {
         solve();

@@ -203,49 +203,55 @@ inline void write(T x)
 }
 
 /*#####################################BEGIN#####################################*/
-
-const int N = 2e3 + 5;
-
-ll f[N][N];
-
-const int mod = 1e9 + 7;
-
-ll qmi(ll x, ll k, ll p = mod)
-{
-    x %= p;
-    ll res = 1;
-    while (k)
-    {
-        if (k & 1)
-            res = res * x % p;
-        x = x * x % p;
-        k >>= 1;
-    }
-    return res;
-}
-void getF()
-{
-    f[0][0] = 0;
-    ll inv2 = qmi(2, mod - 2);
-    for (int i = 1; i < N; i++)
-    {
-        f[i][i] = i;
-    }
-    for (int i = 2; i < N; i++)
-    {
-        for (int j = 1; j < i; j++)
-        {
-            f[i][j] = (f[i - 1][j] + f[i - 1][j - 1]) % mod * inv2 % mod;
-        }
-    }
-}
-
 void solve()
 {
-    int n, m;
-    ll k;
-    cin >> n >> m >> k;
-    cout << f[n][m] * k % mod << endl;
+    int n;
+    cin >> n;
+    vl a(n + 1);
+    ll gd = 0;
+    ll sum = 0;
+    for (int i = 1; i <= n; i++)
+    {
+        cin >> a[i];
+        sum += a[i];
+        gd = __gcd(gd, a[i]);
+    }
+    if (sum < 2)
+    {
+        cout << "-1\n";
+        return;
+    }
+    if (gd != 1)
+    {
+        cout << "0\n";
+        return;
+    }
+    auto cal = [&](ll k) -> ll
+    {
+        ll res = 0;
+        ll cnt = 0;
+        for (int i = 1; i <= n; i++)
+        {
+            cnt = (cnt + a[i]) % k;
+            res += min(cnt, k - cnt);
+        }
+        return res;
+    };
+    ll ans = infll;
+    for (ll i = 2; i * i <= sum; i++)
+    {
+        if (sum % i == 0)
+        {
+            ans = min(ans, cal(i));
+            while (sum % i == 0)
+            {
+                sum /= i;
+            }
+        }
+    }
+    if (sum > 1)
+        ans = min(ans, cal(sum));
+    cout << ans << endl;
 }
 
 int main()
@@ -254,8 +260,7 @@ int main()
     // freopen("test.in", "r", stdin);
     // freopen("test.out", "w", stdout);
     int _ = 1;
-    std::cin >> _;
-    getF();
+    // std::cin >> _;
     while (_--)
     {
         solve();

@@ -165,7 +165,7 @@ typedef unordered_map<char, ll> umcl;
 typedef unordered_map<string, int> umsi;
 typedef unordered_map<string, ll> umsl;
 
-std::mt19937_64 rng(std::chrono::steady_clock::now().time_since_epoch().count());
+mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
 
 template <typename T>
 inline T read()
@@ -203,59 +203,83 @@ inline void write(T x)
 }
 
 /*#####################################BEGIN#####################################*/
-
-const int N = 2e3 + 5;
-
-ll f[N][N];
-
-const int mod = 1e9 + 7;
-
-ll qmi(ll x, ll k, ll p = mod)
-{
-    x %= p;
-    ll res = 1;
-    while (k)
-    {
-        if (k & 1)
-            res = res * x % p;
-        x = x * x % p;
-        k >>= 1;
-    }
-    return res;
-}
-void getF()
-{
-    f[0][0] = 0;
-    ll inv2 = qmi(2, mod - 2);
-    for (int i = 1; i < N; i++)
-    {
-        f[i][i] = i;
-    }
-    for (int i = 2; i < N; i++)
-    {
-        for (int j = 1; j < i; j++)
-        {
-            f[i][j] = (f[i - 1][j] + f[i - 1][j - 1]) % mod * inv2 % mod;
-        }
-    }
-}
-
 void solve()
 {
-    int n, m;
-    ll k;
-    cin >> n >> m >> k;
-    cout << f[n][m] * k % mod << endl;
+    int n;
+    cin >> n;
+
+    vvi adj(n);
+    for (int i = 1; i < n; i++)
+    {
+        int u, v;
+        cin >> u >> v;
+        u--, v--;
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
+
+    vi col(n);
+    int cnt0 = 0, cnt1 = 0;
+    auto dfs = [&](auto self, int u, int fa) -> void
+    {
+        if (col[u])
+            cnt1++;
+        else
+            cnt0++;
+        for (auto v : adj[u])
+        {
+            if (v == fa)
+                continue;
+            col[v] = col[u] ^ 1;
+            self(self, v, u);
+        }
+    };
+    dfs(dfs, 0, -1);
+    int idx0 = 0, idx1 = 0;
+    vi ans(n);
+    for (int t = __lg(n); t >= 0; t--)
+    {
+        int v = min(1 << t, n - (1 << t) + 1);
+        if (v <= cnt0)
+        {
+            cnt0 -= v;
+            for (int j = 0; j < v; j++)
+            {
+                while (col[idx0] != 0)
+                {
+                    idx0++;
+                }
+                ans[idx0] = (1 << t) + j;
+                idx0++;
+            }
+        }
+        else
+        {
+            cnt1 -= v;
+            for (int j = 0; j < v; j++)
+            {
+                while (col[idx1] != 1)
+                {
+                    idx1++;
+                }
+                ans[idx1] = (1 << t) + j;
+                idx1++;
+            }
+        }
+    }
+    for (int i = 0; i < n; i++)
+    {
+        cout << ans[i] << " \n"[i == n - 1];
+    }
 }
 
 int main()
 {
-    ios::sync_with_stdio(false), std::cin.tie(0), std::cout.tie(0);
+    ios::sync_with_stdio(false), cin.tie(0), cout.tie(0);
     // freopen("test.in", "r", stdin);
     // freopen("test.out", "w", stdout);
     int _ = 1;
-    std::cin >> _;
-    getF();
+    cin >> _;
     while (_--)
     {
         solve();

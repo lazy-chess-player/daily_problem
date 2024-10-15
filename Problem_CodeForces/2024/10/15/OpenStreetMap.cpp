@@ -203,49 +203,70 @@ inline void write(T x)
 }
 
 /*#####################################BEGIN#####################################*/
-
-const int N = 2e3 + 5;
-
-ll f[N][N];
-
-const int mod = 1e9 + 7;
-
-ll qmi(ll x, ll k, ll p = mod)
-{
-    x %= p;
-    ll res = 1;
-    while (k)
-    {
-        if (k & 1)
-            res = res * x % p;
-        x = x * x % p;
-        k >>= 1;
-    }
-    return res;
-}
-void getF()
-{
-    f[0][0] = 0;
-    ll inv2 = qmi(2, mod - 2);
-    for (int i = 1; i < N; i++)
-    {
-        f[i][i] = i;
-    }
-    for (int i = 2; i < N; i++)
-    {
-        for (int j = 1; j < i; j++)
-        {
-            f[i][j] = (f[i - 1][j] + f[i - 1][j - 1]) % mod * inv2 % mod;
-        }
-    }
-}
-
 void solve()
 {
-    int n, m;
-    ll k;
-    cin >> n >> m >> k;
-    cout << f[n][m] * k % mod << endl;
+    int n, m, a, b;
+    cin >> n >> m >> a >> b;
+    ll g0, x, y, z;
+    cin >> g0 >> x >> y >> z;
+    vvl h(n, vl(m));
+    h[0][0] = g0;
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < m; j++)
+        {
+            if (i == 0 && j == 0)
+                continue;
+            g0 = (g0 * x + y) % z;
+            h[i][j] = g0;
+        }
+    }
+    // for (int i = 0; i < n; i++)
+    // {
+    //     for (int j = 0; j < m; j++)
+    //     {
+    //         cout << h[i][j] << " \n"[j == m - 1];
+    //     }
+    // }
+    vvl mn(n, vl(m));
+    deque<int> q;
+    for (int i = 0; i < n; i++)
+    {
+        q.clear();
+        for (int j = 0; j < m; j++)
+        {
+            while (!q.empty() && q.front() <= j - b)
+                q.pop_front();
+            while (!q.empty() && h[i][q.back()] >= h[i][j])
+                q.pop_back();
+            q.push_back(j);
+            mn[i][j] = h[i][q.front()];
+        }
+    }
+    // for (int i = 0; i < n; i++)
+    // {
+    //     for (int j = 0; j < m; j++)
+    //     {
+    //         cout << mn[i][j] << " \n"[j == m - 1];
+    //     }
+    // }
+    ll ans = 0;
+    for (int j = b - 1; j < m; j++)
+    {
+        q.clear();
+        for (int i = 0; i < n; i++)
+        {
+            while (!q.empty() && q.front() <= i - a)
+                q.pop_front();
+            while (!q.empty() && mn[q.back()][j] >= mn[i][j])
+                q.pop_back();
+            q.push_back(i);
+            if (i >= a - 1 && j >= b - 1)
+
+                ans += mn[q.front()][j];
+        }
+    }
+    cout << ans << endl;
 }
 
 int main()
@@ -254,8 +275,7 @@ int main()
     // freopen("test.in", "r", stdin);
     // freopen("test.out", "w", stdout);
     int _ = 1;
-    std::cin >> _;
-    getF();
+    // std::cin >> _;
     while (_--)
     {
         solve();

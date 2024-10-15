@@ -203,49 +203,37 @@ inline void write(T x)
 }
 
 /*#####################################BEGIN#####################################*/
-
-const int N = 2e3 + 5;
-
-ll f[N][N];
-
-const int mod = 1e9 + 7;
-
-ll qmi(ll x, ll k, ll p = mod)
-{
-    x %= p;
-    ll res = 1;
-    while (k)
-    {
-        if (k & 1)
-            res = res * x % p;
-        x = x * x % p;
-        k >>= 1;
-    }
-    return res;
-}
-void getF()
-{
-    f[0][0] = 0;
-    ll inv2 = qmi(2, mod - 2);
-    for (int i = 1; i < N; i++)
-    {
-        f[i][i] = i;
-    }
-    for (int i = 2; i < N; i++)
-    {
-        for (int j = 1; j < i; j++)
-        {
-            f[i][j] = (f[i - 1][j] + f[i - 1][j - 1]) % mod * inv2 % mod;
-        }
-    }
-}
-
+const ll mod = 1e9 + 7;
 void solve()
 {
-    int n, m;
-    ll k;
-    cin >> n >> m >> k;
-    cout << f[n][m] * k % mod << endl;
+    int n, h;
+    cin >> n >> h;
+    vi a(n + 2);
+    bool falg = false;
+    for (int i = 1; i <= n; i++)
+    {
+        int x;
+        cin >> x;
+        a[i] = h - x;
+    }
+    ll ans = 1;
+    ll cnt = 0;
+    for (int i = 1; i <= n + 1; i++)
+    {
+        int d = a[i] - a[i - 1];
+        if (d == 1)
+            cnt++;
+        else if (d == 0)
+            ans = ans * (cnt + 1) % mod;
+        else if (d == -1)
+            ans = ans * (cnt--) % mod;
+        else
+        {
+            cout << 0 << "\n";
+            return;
+        }
+    }
+    cout << ans << "\n";
 }
 
 int main()
@@ -254,8 +242,7 @@ int main()
     // freopen("test.in", "r", stdin);
     // freopen("test.out", "w", stdout);
     int _ = 1;
-    std::cin >> _;
-    getF();
+    // std::cin >> _;
     while (_--)
     {
         solve();

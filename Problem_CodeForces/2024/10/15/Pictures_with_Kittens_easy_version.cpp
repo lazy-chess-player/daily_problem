@@ -204,48 +204,47 @@ inline void write(T x)
 
 /*#####################################BEGIN#####################################*/
 
-const int N = 2e3 + 5;
-
-ll f[N][N];
-
-const int mod = 1e9 + 7;
-
-ll qmi(ll x, ll k, ll p = mod)
-{
-    x %= p;
-    ll res = 1;
-    while (k)
-    {
-        if (k & 1)
-            res = res * x % p;
-        x = x * x % p;
-        k >>= 1;
-    }
-    return res;
-}
-void getF()
-{
-    f[0][0] = 0;
-    ll inv2 = qmi(2, mod - 2);
-    for (int i = 1; i < N; i++)
-    {
-        f[i][i] = i;
-    }
-    for (int i = 2; i < N; i++)
-    {
-        for (int j = 1; j < i; j++)
-        {
-            f[i][j] = (f[i - 1][j] + f[i - 1][j - 1]) % mod * inv2 % mod;
-        }
-    }
-}
-
 void solve()
 {
-    int n, m;
-    ll k;
-    cin >> n >> m >> k;
-    cout << f[n][m] * k % mod << endl;
+    int n, k, x;
+    cin >> n >> k >> x;
+    vi a(n + 1);
+    for (int i = 1; i <= n; i++)
+    {
+        cin >> a[i];
+    }
+    if (n / k > x)
+    {
+        cout << "-1\n";
+        return;
+    }
+    vvl dp(n + 1, vl(x + 1, -infll));
+    dp[0][0] = 0;
+    deque<int> q;
+    for (int j = 1; j <= x; j++)
+    {
+        q.clear();
+        q.push_back(0);
+        for (int i = 1; i <= n; i++)
+        {
+            while (!q.empty() && q.front() < i - k)
+            {
+                q.pop_front();
+            }
+            dp[i][j] = dp[q.front()][j - 1] + a[i];
+            while (!q.empty() && dp[i][j - 1] >= dp[q.back()][j - 1])
+            {
+                q.pop_back();
+            }
+            q.push_back(i);
+        }
+    }
+    ll ans = -1;
+    for (int i = n - k + 1; i <= n; i++)
+    {
+        ans = max(ans, dp[i][x]);
+    }
+    cout << ans << "\n";
 }
 
 int main()
@@ -254,8 +253,7 @@ int main()
     // freopen("test.in", "r", stdin);
     // freopen("test.out", "w", stdout);
     int _ = 1;
-    std::cin >> _;
-    getF();
+    // std::cin >> _;
     while (_--)
     {
         solve();

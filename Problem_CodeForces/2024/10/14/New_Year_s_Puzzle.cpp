@@ -203,49 +203,46 @@ inline void write(T x)
 }
 
 /*#####################################BEGIN#####################################*/
-
-const int N = 2e3 + 5;
-
-ll f[N][N];
-
-const int mod = 1e9 + 7;
-
-ll qmi(ll x, ll k, ll p = mod)
-{
-    x %= p;
-    ll res = 1;
-    while (k)
-    {
-        if (k & 1)
-            res = res * x % p;
-        x = x * x % p;
-        k >>= 1;
-    }
-    return res;
-}
-void getF()
-{
-    f[0][0] = 0;
-    ll inv2 = qmi(2, mod - 2);
-    for (int i = 1; i < N; i++)
-    {
-        f[i][i] = i;
-    }
-    for (int i = 2; i < N; i++)
-    {
-        for (int j = 1; j < i; j++)
-        {
-            f[i][j] = (f[i - 1][j] + f[i - 1][j - 1]) % mod * inv2 % mod;
-        }
-    }
-}
-
 void solve()
 {
     int n, m;
-    ll k;
-    cin >> n >> m >> k;
-    cout << f[n][m] * k % mod << endl;
+    cin >> n >> m;
+    mii mp;
+    for (int i = 0; i < m; i++)
+    {
+        int x, y;
+        cin >> x >> y;
+        mp[y] += x;
+    }
+    int flag = 1, last = -1;
+    for (auto t : mp)
+    {
+        if (last == -1)
+        {
+            if (t.sd != 3)
+                last = t.ft + t.sd;
+        }
+        else
+        {
+            if (t.sd == 3)
+            {
+                flag = false;
+                break;
+            }
+            if ((last + t.ft + t.sd) % 2 == 0)
+            {
+                flag = false;
+                break;
+            }
+            last = -1;
+        }
+    }
+    if (last != -1)
+        flag = false;
+    if (flag)
+        YES;
+    else
+        NO;
 }
 
 int main()
@@ -255,7 +252,6 @@ int main()
     // freopen("test.out", "w", stdout);
     int _ = 1;
     std::cin >> _;
-    getF();
     while (_--)
     {
         solve();

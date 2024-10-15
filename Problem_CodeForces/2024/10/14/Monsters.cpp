@@ -204,48 +204,75 @@ inline void write(T x)
 
 /*#####################################BEGIN#####################################*/
 
-const int N = 2e3 + 5;
-
-ll f[N][N];
-
-const int mod = 1e9 + 7;
-
-ll qmi(ll x, ll k, ll p = mod)
+struct node
 {
-    x %= p;
-    ll res = 1;
-    while (k)
+    int val;
+    int id;
+    node(int _val = 0, int _id = 0) : val(_val), id(_id) {}
+    friend bool operator<(const node &a, const node &b)
     {
-        if (k & 1)
-            res = res * x % p;
-        x = x * x % p;
-        k >>= 1;
+        return a.val < b.val;
     }
-    return res;
-}
-void getF()
-{
-    f[0][0] = 0;
-    ll inv2 = qmi(2, mod - 2);
-    for (int i = 1; i < N; i++)
-    {
-        f[i][i] = i;
-    }
-    for (int i = 2; i < N; i++)
-    {
-        for (int j = 1; j < i; j++)
-        {
-            f[i][j] = (f[i - 1][j] + f[i - 1][j - 1]) % mod * inv2 % mod;
-        }
-    }
-}
 
+    friend bool operator>(const node &a, const node &b)
+    {
+        return a.val > b.val;
+    }
+};
 void solve()
 {
     int n, m;
-    ll k;
-    cin >> n >> m >> k;
-    cout << f[n][m] * k % mod << endl;
+    cin >> n >> m;
+    vector<node> a(n + 1);
+    for (int i = 1; i <= n; i++)
+    {
+        cin >> a[i].val;
+        a[i].id = i;
+    }
+    vvi adj(n + 1);
+    for (int i = 1; i <= m; i++)
+    {
+        int x, y;
+        cin >> x >> y;
+        adj[x].pb(y);
+        adj[y].pb(x);
+    }
+    mii vis;
+    auto bfs = [&](int src) -> bool
+    {
+        priority_queue<node, vector<node>, greater<node>> q;
+        q.push(a[src]);
+        int cnt = 0;
+        while (!q.empty())
+        {
+            node t = q.top();
+            q.pop();
+            if (vis[t.id] == src)
+                continue;
+            vis[t.id] = src;
+            if (a[t.id].val > cnt)
+                return 0;
+            cnt++;
+            for (auto v : adj[t.id])
+            {
+                if (vis[v] < src)
+                    q.push(a[v]);
+            }
+        }
+        return cnt == n;
+    };
+    for (int i = 1; i <= n; i++)
+    {
+        if (a[i].val == 0 && vis[i] == 0)
+        {
+            if (bfs(i))
+            {
+                YES;
+                return;
+            }
+        }
+    }
+    NO;
 }
 
 int main()
@@ -255,7 +282,6 @@ int main()
     // freopen("test.out", "w", stdout);
     int _ = 1;
     std::cin >> _;
-    getF();
     while (_--)
     {
         solve();
